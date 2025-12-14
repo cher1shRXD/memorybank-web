@@ -58,7 +58,7 @@ export default function SimplePDFAnnotator({
   }, [pdfUrl]);
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [scale, setScale] = useState<number>(0.6);
+  const scale = 1; // 100% 고정
   const [tool, setTool] = useState<Tool>({
     type: 'pen',
     color: '#000000',
@@ -138,7 +138,9 @@ export default function SimplePDFAnnotator({
       return;
     }
     
-    // 필기 중 스크롤 방지 - 대신 pointer capture를 사용하여 처리
+    // 이벤트 기본 동작 방지
+    e.preventDefault();
+    e.stopPropagation();
     
     const rect = canvasRef.current!.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
@@ -173,6 +175,10 @@ export default function SimplePDFAnnotator({
     // 손가락 터치는 무시
     if (e.pointerType === 'touch') return;
     
+    // 이벤트 기본 동작 방지
+    e.preventDefault();
+    e.stopPropagation();
+    
     const rect = canvasRef.current!.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
@@ -206,6 +212,12 @@ export default function SimplePDFAnnotator({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    // 필기 중이면 터치 이벤트 무시
+    if (isDrawing) {
+      e.preventDefault();
+      return;
+    }
+    
     if (e.touches.length === 1) {
       setIsPanning(true);
       setPanStart({
@@ -213,9 +225,15 @@ export default function SimplePDFAnnotator({
         y: e.touches[0].clientY
       });
     }
-  }, []);
+  }, [isDrawing]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    // 필기 중이면 터치 이벤트 무시
+    if (isDrawing) {
+      e.preventDefault();
+      return;
+    }
+    
     if (isPanning && e.touches.length === 1 && scrollContainerRef.current) {
       const deltaX = panStart.x - e.touches[0].clientX;
       const deltaY = panStart.y - e.touches[0].clientY;
@@ -232,7 +250,7 @@ export default function SimplePDFAnnotator({
         y: e.touches[0].clientY
       });
     }
-  }, [isPanning, panStart]);
+  }, [isDrawing, isPanning, panStart]);
 
   const handleTouchEnd = useCallback(() => {
     setIsPanning(false);
@@ -352,57 +370,22 @@ export default function SimplePDFAnnotator({
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setScale(s => Math.max(0.3, s - 0.1))}
-            className="px-2 py-0.5 rounded hover:bg-gray-100 text-xs"
-          >
-            -
-          </button>
-          <span className="text-xs w-12 text-center">{Math.round(scale * 100)}%</span>
-          <button
-            onClick={() => setScale(s => Math.min(2, s + 0.1))}
-            className="px-2 py-0.5 rounded hover:bg-gray-100 text-xs"
-          >
-            +
-          </button>
-          
-          <button
-            onClick={() => {
-              if (scrollContainerRef.current && pageSize.width > 0) {
-                const containerWidth = scrollContainerRef.current.clientWidth - 32;
-                const containerHeight = scrollContainerRef.current.clientHeight - 32;
-                
-                const scaleToFitWidth = containerWidth / pageSize.width;
-                const scaleToFitHeight = containerHeight / pageSize.height;
-                
-                const optimalScale = Math.min(scaleToFitWidth, scaleToFitHeight, 1.2);
-                setScale(Math.max(0.3, optimalScale));
-              }
-            }}
-            className="ml-2 px-2 py-0.5 rounded hover:bg-gray-100 text-xs"
-            title="화면에 맞추기"
-          >
-            맞춤
-          </button>
-          
-          {!readOnly && (
-            <>
-              <button
-                onClick={clearCanvas}
-                className="px-2 py-0.5 bg-gray-500 text-white rounded hover:bg-gray-600 text-xs"
-              >
-                지우기
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-2 py-0.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
-              >
-                저장
-              </button>
-            </>
-          )}
-        </div>
+        {!readOnly && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={clearCanvas}
+              className="px-2 py-0.5 bg-gray-500 text-white rounded hover:bg-gray-600 text-xs"
+            >
+              지우기
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-2 py-0.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
+            >
+              저장
+            </button>
+          </div>
+        )}
         
         {/* 입력 모드 표시 */}
         {inputMode && (
@@ -448,7 +431,7 @@ export default function SimplePDFAnnotator({
               className="absolute top-0 left-0"
               style={{ 
                 pointerEvents: readOnly ? 'none' : 'auto',
-                touchAction: isDrawing ? 'none' : 'pan-x pan-y', // 필기 중에만 터치 동작 방지
+                touchAction: 'none', // 터치 기반 스크롤 완전 방지
                 cursor: tool.type === 'pen' ? 'crosshair' : 
                         tool.type === 'highlighter' ? 'text' :
                         tool.type === 'eraser' ? 'grab' : 'auto'
