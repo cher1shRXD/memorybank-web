@@ -75,7 +75,7 @@ export default function AnnotatePage({ params: paramsPromise }: PageParams) {
         ctx.fillStyle = '#666';
         ctx.font = '20px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('PDF 주석이 포함된 노트', 400, 300);
+        ctx.fillText('필기 노트', 400, 300);
       }
       
       const thumbnailBase64 = canvas.toDataURL('image/png').split(',')[1];
@@ -86,9 +86,9 @@ export default function AnnotatePage({ params: paramsPromise }: PageParams) {
       };
 
       await notesApi.update(params.id, updateData);
-      toast.success('성공', '주석이 저장되었습니다.');
+      toast.success('성공', '필기가 저장되었습니다.');
     } catch (error) {
-      toast.error('오류', '주석 저장에 실패했습니다.');
+      toast.error('오류', '필기 저장에 실패했습니다.');
     }
   };
 
@@ -126,20 +126,20 @@ export default function AnnotatePage({ params: paramsPromise }: PageParams) {
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
-      <div className="bg-white shadow-sm p-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="bg-white shadow-sm px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
           <button
             onClick={handleClose}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-gray-600 hover:text-gray-900 text-sm"
           >
             ← 돌아가기
           </button>
-          <h1 className="text-xl font-semibold">PDF 주석 편집</h1>
+          <h1 className="text-lg font-semibold">필기 편집</h1>
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-gray-700 hover:text-gray-900"
+            className="px-3 py-1 text-gray-700 hover:text-gray-900 text-sm"
           >
             취소
           </button>
@@ -147,7 +147,7 @@ export default function AnnotatePage({ params: paramsPromise }: PageParams) {
       </div>
 
       {/* PDF Annotator */}
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         <PDFAnnotator
           pdfUrl={pdfUrl}
           initialDrawingData={drawingData}

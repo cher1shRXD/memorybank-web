@@ -322,40 +322,40 @@ export default function SimplePDFAnnotator({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Header */}
-      <div className="bg-white shadow-sm p-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="bg-white shadow-sm px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => changePage(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50"
+            className="px-2 py-0.5 rounded hover:bg-gray-100 disabled:opacity-50 text-xs"
           >
             ← 이전
           </button>
-          <span className="text-sm">
+          <span className="text-xs">
             {currentPage} / {numPages || '?'}
           </span>
           <button
             onClick={() => changePage(Math.min(numPages, currentPage + 1))}
             disabled={currentPage === numPages}
-            className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50"
+            className="px-2 py-0.5 rounded hover:bg-gray-100 disabled:opacity-50 text-xs"
           >
             다음 →
           </button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setScale(s => Math.max(0.5, s - 0.1))}
-            className="p-2 rounded-lg hover:bg-gray-100"
+            className="px-2 py-0.5 rounded hover:bg-gray-100 text-xs"
           >
             -
           </button>
-          <span className="text-sm w-16 text-center">{Math.round(scale * 100)}%</span>
+          <span className="text-xs w-12 text-center">{Math.round(scale * 100)}%</span>
           <button
             onClick={() => setScale(s => Math.min(2, s + 0.1))}
-            className="p-2 rounded-lg hover:bg-gray-100"
+            className="px-2 py-0.5 rounded hover:bg-gray-100 text-xs"
           >
             +
           </button>
@@ -364,13 +364,13 @@ export default function SimplePDFAnnotator({
             <>
               <button
                 onClick={clearCanvas}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                className="px-2 py-0.5 bg-gray-500 text-white rounded hover:bg-gray-600 text-xs"
               >
                 지우기
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="px-2 py-0.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
               >
                 저장
               </button>
@@ -380,7 +380,7 @@ export default function SimplePDFAnnotator({
         
         {/* 입력 모드 표시 */}
         {inputMode && (
-          <div className="absolute bottom-20 right-4 bg-black bg-opacity-75 text-white px-3 py-2 rounded-lg text-sm">
+          <div className="absolute bottom-4 right-4 bg-black bg-opacity-75 text-white px-3 py-2 rounded-lg text-sm">
             {inputMode === 'pen' ? '🖊️ Apple Pencil' : 
              inputMode === 'touch' ? '👆 손가락 터치' : 
              '🖱️ 마우스'}
@@ -389,7 +389,7 @@ export default function SimplePDFAnnotator({
       </div>
 
       {/* PDF and Canvas */}
-      <div ref={scrollContainerRef} className="flex-1 overflow-auto bg-gray-200 p-8">
+      <div ref={scrollContainerRef} className="flex-1 min-h-0 overflow-auto bg-gray-200 p-8">
         <div className="mx-auto relative" style={{ width: pageSize.width * scale }}>
           <Document
             file={pdfFile}
@@ -439,39 +439,39 @@ export default function SimplePDFAnnotator({
 
       {/* Tool Panel */}
       {!readOnly && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-xl p-4 flex items-center gap-4 z-10">
-          <div className="flex gap-2">
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-xl p-2 flex items-center gap-2 z-10">
+          <div className="flex gap-1">
             <button
               onClick={() => setTool({ ...tool, type: 'pen' })}
-              className={`p-3 rounded-lg transition-all ${
-                tool.type === 'pen' ? 'bg-blue-500 text-white scale-110' : 'bg-gray-100 hover:bg-gray-200'
+              className={`p-2 rounded transition-all ${
+                tool.type === 'pen' ? 'bg-blue-500 text-white scale-105' : 'bg-gray-100 hover:bg-gray-200'
               }`}
-              title="펜 (단축키: P)"
+              title="펜 (P)"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
               </svg>
             </button>
             <button
               onClick={() => setTool({ ...tool, type: 'highlighter' })}
-              className={`p-3 rounded-lg transition-all ${
-                tool.type === 'highlighter' ? 'bg-yellow-500 text-white scale-110' : 'bg-gray-100 hover:bg-gray-200'
+              className={`p-2 rounded transition-all ${
+                tool.type === 'highlighter' ? 'bg-yellow-500 text-white scale-105' : 'bg-gray-100 hover:bg-gray-200'
               }`}
-              title="형광펜 (단축키: H)"
+              title="형광펜 (H)"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.75 7L14 3.25l-10 10V17h3.75l10-10zm2.96-2.96c.39-.39.39-1.02 0-1.41L18.37.29c-.39-.39-1.02-.39-1.41 0L15 2.25 18.75 6l1.96-1.96z"/>
                 <path fillOpacity=".36" d="M0 20h24v4H0z"/>
               </svg>
             </button>
             <button
               onClick={() => setTool({ ...tool, type: 'eraser' })}
-              className={`p-3 rounded-lg transition-all ${
-                tool.type === 'eraser' ? 'bg-red-500 text-white scale-110' : 'bg-gray-100 hover:bg-gray-200'
+              className={`p-2 rounded transition-all ${
+                tool.type === 'eraser' ? 'bg-red-500 text-white scale-105' : 'bg-gray-100 hover:bg-gray-200'
               }`}
-              title="지우개 (단축키: E)"
+              title="지우개 (E)"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M15.14 3c-.51 0-1.02.2-1.41.59L2.59 14.73c-.78.78-.78 2.05 0 2.83L5.03 20h7.66l8.72-8.72c.78-.78.78-2.05 0-2.83l-4.85-4.85c-.39-.39-.9-.59-1.41-.59zM6 18.5l6-6L13.5 14l-6 6H6v-1.5z"/>
               </svg>
             </button>
@@ -484,7 +484,7 @@ export default function SimplePDFAnnotator({
                   <button
                     key={color}
                     onClick={() => setTool({ ...tool, color })}
-                    className={`w-8 h-8 rounded-full border-2 ${
+                    className={`w-6 h-6 rounded-full border-2 ${
                       tool.color === color ? 'border-gray-800' : 'border-gray-300'
                     }`}
                     style={{ backgroundColor: color }}
@@ -492,20 +492,20 @@ export default function SimplePDFAnnotator({
                 ))}
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 {[1, 2, 4, 8].map(width => (
                   <button
                     key={width}
                     onClick={() => setTool({ ...tool, width })}
-                    className={`w-10 h-10 rounded-lg border-2 flex items-center justify-center ${
-                      tool.width === width ? 'border-blue-500' : 'border-gray-300'
+                    className={`w-8 h-8 rounded border flex items-center justify-center ${
+                      tool.width === width ? 'bg-gray-200 border-gray-400' : 'border-gray-300'
                     }`}
                   >
                     <div
                       className="rounded-full bg-black"
                       style={{
-                        width: `${width * 2}px`,
-                        height: `${width * 2}px`,
+                        width: `${width * 1.5}px`,
+                        height: `${width * 1.5}px`,
                       }}
                     />
                   </button>
