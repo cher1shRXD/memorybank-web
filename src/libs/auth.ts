@@ -30,6 +30,16 @@ export const authApi = {
   }
 };
 
+export const getAuthHeaders = (): Record<string, string> => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      return { Authorization: `Bearer ${token}` };
+    }
+  }
+  return {};
+};
+
 // Authorization is now handled by api-client interceptors
 // These functions are kept for backward compatibility but do nothing
 export const setAuthToken = () => {
