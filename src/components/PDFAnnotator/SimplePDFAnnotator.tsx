@@ -386,9 +386,10 @@ export default function SimplePDFAnnotator({
             </button>
             <button
               onClick={handleSave}
-              className="px-2 py-0.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
+              disabled={isSaving}
+              className="px-2 py-0.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs disabled:bg-blue-300"
             >
-              저장
+              {isSaving ? '저장 중...' : '저장'}
             </button>
           </div>
         )}
@@ -406,7 +407,7 @@ export default function SimplePDFAnnotator({
       {/* PDF and Canvas */}
       <div 
         ref={scrollContainerRef} 
-        className={`flex-1 min-h-0 bg-gray-200 p-4 ${isDrawing ? 'overflow-hidden' : 'overflow-auto'}`}
+        className="flex-1 min-h-0 bg-gray-200 p-4 overflow-auto"
       >
         <div className="mx-auto relative" style={{ width: pageSize.width * scale }}>
           <Document
@@ -437,7 +438,7 @@ export default function SimplePDFAnnotator({
               className="absolute top-0 left-0"
               style={{ 
                 pointerEvents: readOnly ? 'none' : 'auto',
-                touchAction: 'none', // 터치 기반 스크롤 완전 방지
+                touchAction: 'none', // 캔버스 영역에서만 터치 스크롤 방지
                 cursor: tool.type === 'pen' ? 'crosshair' : 
                         tool.type === 'highlighter' ? 'text' :
                         tool.type === 'eraser' ? 'grab' : 'auto'
