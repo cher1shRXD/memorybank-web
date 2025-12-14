@@ -53,6 +53,12 @@ export default function HomePage() {
           <h1 className="text-3xl font-bold text-gray-900">Memory Bank</h1>
           <div className="flex gap-4">
             <button
+              onClick={() => router.push('/graph')}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            >
+              지식 그래프
+            </button>
+            <button
               onClick={() => router.push('/notes/new')}
               className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
             >
