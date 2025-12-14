@@ -1,0 +1,40 @@
+{
+  "name": "memorybank-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@cher1shrxd/api-client": "^1.0.3",
+    "@cher1shrxd/loading": "^1.0.2",
+    "@cher1shrxd/modal": "^1.0.2",
+    "@cher1shrxd/toast": "^1.0.2",
+    "@hookform/resolvers": "^5.2.2",
+    "@types/fabric": "^5.3.10",
+    "fabric": "^6.9.0",
+    "next": "16.0.10",
+    "pdfjs-dist": "^5.4.449",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "react-hook-form": "^7.68.0",
+    "react-pdf": "^10.2.0",
+    "react-use-measure": "^2.1.7",
+    "zod": "^4.1.13",
+    "zustand": "^5.0.9"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.10",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
