@@ -15,16 +15,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en">
       <body
-        className="antialiased h-full overflow-hidden"
+        className="antialiased"
       >
         <LoadingBar color="#6366f1" />
         <ModalProvider />
         <ToastContainer />
-        <div className="h-full overflow-hidden">
-          {children}
-        </div>
+        {children}
       </body>
     </html>
   );

@@ -38,6 +38,21 @@ export default function AnnotatePage({ params: paramsPromise }: PageParams) {
     setAuthToken();
     loadNote();
   }, [params.id]);
+  
+  // annotate 페이지에서만 body 스크롤 방지
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.height = '100%';
+    document.documentElement.style.height = '100%';
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.height = '';
+      document.documentElement.style.height = '';
+    };
+  }, []);
 
   const loadNote = async () => {
     try {
