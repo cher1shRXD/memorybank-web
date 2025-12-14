@@ -353,7 +353,7 @@ export default function SimplePDFAnnotator({
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="bg-white shadow-sm px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -407,7 +407,7 @@ export default function SimplePDFAnnotator({
       {/* PDF and Canvas */}
       <div 
         ref={scrollContainerRef} 
-        className="flex-1 min-h-0 bg-gray-200 p-4 overflow-auto"
+        className="flex-1 bg-gray-200 p-4 overflow-auto"
       >
         <div className="mx-auto relative" style={{ width: pageSize.width * scale }}>
           <Document

@@ -139,9 +139,9 @@ export default function AnnotatePage({ params: paramsPromise }: PageParams) {
   const pdfUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${note.pdf_url}`;
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="fixed inset-0 flex flex-col">
       {/* Header */}
-      <div className="bg-white shadow-sm px-4 py-2 flex items-center justify-between">
+      <div className="bg-white shadow-sm px-4 py-2 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
           <button
             onClick={handleClose}
