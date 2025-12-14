@@ -58,7 +58,7 @@ export default function SimplePDFAnnotator({
   }, [pdfUrl]);
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [scale, setScale] = useState<number>(1);
+  const [scale, setScale] = useState<number>(0.8);
   const [tool, setTool] = useState<Tool>({
     type: 'pen',
     color: '#000000',
@@ -138,6 +138,11 @@ export default function SimplePDFAnnotator({
       return;
     }
     
+    // 필기 중 스크롤 방지
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.style.overflow = 'hidden';
+    }
+    
     const rect = canvasRef.current!.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
@@ -194,6 +199,11 @@ export default function SimplePDFAnnotator({
       setIsDrawing(false);
       saveCurrentCanvas();
       canvasRef.current?.releasePointerCapture(e.pointerId);
+      
+      // 필기 종료 후 스크롤 다시 활성화
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.style.overflow = 'auto';
+      }
     }
   }, [isDrawing, saveCurrentCanvas]);
 
@@ -217,8 +227,12 @@ export default function SimplePDFAnnotator({
       const deltaX = panStart.x - e.touches[0].clientX;
       const deltaY = panStart.y - e.touches[0].clientY;
       
-      scrollContainerRef.current.scrollLeft += deltaX;
-      scrollContainerRef.current.scrollTop += deltaY;
+      const container = scrollContainerRef.current;
+      container.scrollTo({
+        left: container.scrollLeft + deltaX,
+        top: container.scrollTop + deltaY,
+        behavior: 'instant'
+      });
       
       setPanStart({
         x: e.touches[0].clientX,
@@ -260,6 +274,19 @@ export default function SimplePDFAnnotator({
   const onPageLoadSuccess = (page: { width: number; height: number }) => {
     const { width, height } = page;
     setPageSize({ width, height });
+    
+    // 화면에 맞게 scale 자동 조정
+    if (scrollContainerRef.current && width > 0) {
+      const containerWidth = scrollContainerRef.current.clientWidth - 32; // padding 고려
+      const containerHeight = scrollContainerRef.current.clientHeight - 32;
+      
+      const scaleToFitWidth = containerWidth / width;
+      const scaleToFitHeight = containerHeight / height;
+      
+      // 너비와 높이 중 더 작은 scale 선택 (전체가 보이도록)
+      const optimalScale = Math.min(scaleToFitWidth, scaleToFitHeight, 1.5);
+      setScale(Math.max(0.5, optimalScale)); // 최소 0.5, 최대 1.5
+    }
   };
 
   // Change page
@@ -347,7 +374,7 @@ export default function SimplePDFAnnotator({
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setScale(s => Math.max(0.5, s - 0.1))}
+            onClick={() => setScale(s => Math.max(0.3, s - 0.1))}
             className="px-2 py-0.5 rounded hover:bg-gray-100 text-xs"
           >
             -
@@ -389,7 +416,7 @@ export default function SimplePDFAnnotator({
       </div>
 
       {/* PDF and Canvas */}
-      <div ref={scrollContainerRef} className="flex-1 min-h-0 overflow-auto bg-gray-200 p-8">
+      <div ref={scrollContainerRef} className="flex-1 min-h-0 overflow-auto bg-gray-200 p-4">
         <div className="mx-auto relative" style={{ width: pageSize.width * scale }}>
           <Document
             file={pdfFile}
