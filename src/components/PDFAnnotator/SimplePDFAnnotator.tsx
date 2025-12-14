@@ -70,6 +70,7 @@ export default function SimplePDFAnnotator({
   const [pageSize, setPageSize] = useState({ width: 0, height: 0 });
   const [paths, setPaths] = useState<Map<number, string>>(new Map());
   const [inputMode, setInputMode] = useState<'pen' | 'touch' | 'mouse' | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Load saved paths
   useEffect(() => {
@@ -257,13 +258,18 @@ export default function SimplePDFAnnotator({
   }, []);
 
   // Save all annotations
-  const handleSave = useCallback(() => {
-    if (onSave) {
-      saveCurrentCanvas();
-      const pathsArray = Array.from(paths.entries());
-      onSave(JSON.stringify(pathsArray));
+  const handleSave = useCallback(async () => {
+    if (onSave && !isSaving) {
+      setIsSaving(true);
+      try {
+        saveCurrentCanvas();
+        const pathsArray = Array.from(paths.entries());
+        await onSave(JSON.stringify(pathsArray));
+      } finally {
+        setIsSaving(false);
+      }
     }
-  }, [onSave, paths, saveCurrentCanvas]);
+  }, [onSave, paths, saveCurrentCanvas, isSaving]);
 
   // Clear current page
   const clearCanvas = useCallback(() => {
@@ -389,7 +395,7 @@ export default function SimplePDFAnnotator({
         
         {/* 입력 모드 표시 */}
         {inputMode && (
-          <div className="absolute bottom-4 right-4 bg-black bg-opacity-75 text-white px-3 py-2 rounded-lg text-sm">
+          <div className="absolute bottom-4 right-4 z-999 bg-black bg-opacity-75 text-white px-3 py-2 rounded-lg text-sm">
             {inputMode === 'pen' ? '🖊️ Apple Pencil' : 
              inputMode === 'touch' ? '👆 손가락 터치' : 
              '🖱️ 마우스'}
