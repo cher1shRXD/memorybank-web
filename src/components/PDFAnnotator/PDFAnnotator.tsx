@@ -29,11 +29,9 @@ export default function PDFAnnotator({
     width: 2,
     opacity: 1,
   });
-  const [annotations, setAnnotations] = useState<Map<number, Canvas>>(new Map());
   const [pageSize, setPageSize] = useState({ width: 0, height: 0 });
   const [containerRef, bounds] = useMeasure();
   const canvasRefs = useRef<Map<number, Canvas>>(new Map());
-  const viewerRef = useRef<HTMLDivElement>(null);
 
   // Load PDF
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -51,7 +49,7 @@ export default function PDFAnnotator({
   };
 
   // Handle page load
-  const onPageLoadSuccess = (page: any) => {
+  const onPageLoadSuccess = (page: { width: number; height: number }) => {
     const { width, height } = page;
     setPageSize({ width, height });
     

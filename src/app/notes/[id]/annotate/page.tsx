@@ -36,8 +36,26 @@ export default function AnnotatePage({ params: paramsPromise }: PageParams) {
     }
     
     setAuthToken();
+    
+    const loadNote = async () => {
+      try {
+        const noteData = await notesApi.get(params.id);
+        setNote(noteData);
+        
+        // Load drawing data
+        if (noteData.drawing_data) {
+          setDrawingData(noteData.drawing_data);
+        }
+      } catch {
+        toast.error('오류', '노트를 불러오는데 실패했습니다.');
+        router.push('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadNote();
-  }, [params.id]);
+  }, [params.id, router]);
   
   // annotate 페이지에서만 body 스크롤 방지
   useEffect(() => {
@@ -53,23 +71,6 @@ export default function AnnotatePage({ params: paramsPromise }: PageParams) {
       document.documentElement.style.height = '';
     };
   }, []);
-
-  const loadNote = async () => {
-    try {
-      const noteData = await notesApi.get(params.id);
-      setNote(noteData);
-      
-      // Load drawing data
-      if (noteData.drawing_data) {
-        setDrawingData(noteData.drawing_data);
-      }
-    } catch (error) {
-      toast.error('오류', '노트를 불러오는데 실패했습니다.');
-      router.push('/');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSave = async (drawingData: string) => {
     if (!note) return;
@@ -102,7 +103,7 @@ export default function AnnotatePage({ params: paramsPromise }: PageParams) {
 
       await notesApi.update(params.id, updateData);
       toast.success('성공', '필기가 저장되었습니다.');
-    } catch (error) {
+    } catch {
       toast.error('오류', '필기 저장에 실패했습니다.');
     }
   };

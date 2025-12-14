@@ -77,7 +77,7 @@ export default function NewNotePage() {
       const newNote = await notesApi.create(noteData);
       toast.success('성공', '노트가 생성되었습니다.');
       router.push(`/notes/${newNote.id}`);
-    } catch (error) {
+    } catch {
       toast.error('오류', '노트 생성에 실패했습니다.');
     } finally {
       setIsLoading(false);

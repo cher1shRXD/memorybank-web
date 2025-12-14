@@ -41,7 +41,7 @@ export default function DrawingCanvas({
     return () => {
       fabricCanvas.dispose();
     };
-  }, [width, height, scale, pageNumber]);
+  }, [width, height, scale, pageNumber, onCanvasReady, readOnly, tool.type]);
 
   const hexToRgb = (hex: string): string => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);

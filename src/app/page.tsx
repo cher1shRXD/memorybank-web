@@ -25,13 +25,13 @@ export default function HomePage() {
     setUser(tokens.user);
     setAuthToken();
     loadNotes();
-  }, []);
+  }, [router, setUser]);
 
   const loadNotes = async () => {
     try {
       const notesList = await notesApi.list();
       setNotes(notesList);
-    } catch (error) {
+    } catch {
       toast.error('오류', '노트를 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);

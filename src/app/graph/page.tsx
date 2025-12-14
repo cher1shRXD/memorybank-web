@@ -30,14 +30,14 @@ export default function GraphPage() {
     
     setAuthToken();
     loadGraph();
-  }, []);
+  }, [router]);
 
   const loadGraph = async () => {
     try {
       const graphData = await graphApi.getGraph();
       setNodes(graphData.nodes);
       setEdges(graphData.edges);
-    } catch (error) {
+    } catch {
       toast.error('오류', '그래프를 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);

@@ -10,6 +10,7 @@ export default function NoteCard({ note }: NoteCardProps) {
     <Link href={`/notes/${note.id}`}>
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
         {note.thumbnail_url && (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${note.thumbnail_url}`}
             alt="Note thumbnail"

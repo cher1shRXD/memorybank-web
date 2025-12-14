@@ -79,14 +79,14 @@ export default function ForceGraph({
     const link = container.append('g')
       .attr('stroke', '#999')
       .attr('stroke-opacity', 0.6)
-      .selectAll('line')
+      .selectAll<SVGLineElement, D3Edge>('line')
       .data(d3Edges)
       .join('line')
       .attr('stroke-width', 2);
 
     // Create edge labels
     const linkLabel = container.append('g')
-      .selectAll('text')
+      .selectAll<SVGTextElement, D3Edge>('text')
       .data(d3Edges)
       .join('text')
       .attr('font-size', 10)
@@ -98,7 +98,7 @@ export default function ForceGraph({
     const node = container.append('g')
       .attr('stroke', '#fff')
       .attr('stroke-width', 1.5)
-      .selectAll('circle')
+      .selectAll<SVGCircleElement, D3Node>('circle')
       .data(d3Nodes)
       .join('circle')
       .attr('r', d => d.type === 'Concept' ? 20 : 15)
@@ -138,7 +138,7 @@ export default function ForceGraph({
         d.fy = null;
       });
 
-    node.call(drag as any);
+    node.call(drag);
 
     // Add click handler
     node.on('click', (event, d) => {

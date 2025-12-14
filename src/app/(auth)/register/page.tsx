@@ -38,13 +38,14 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       setIsLoading(true);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword, ...registerData } = data;
       const response = await authApi.register(registerData);
       saveTokens(response);
       setUser(response.user);
       toast.success('성공', '회원가입 성공!');
       router.push('/');
-    } catch (error) {
+    } catch {
       toast.error('오류', '회원가입 실패. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);

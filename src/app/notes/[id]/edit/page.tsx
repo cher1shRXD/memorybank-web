@@ -29,21 +29,22 @@ export default function EditNotePage({ params: paramsPromise }: PageParams) {
     }
     
     setAuthToken();
+    
+    const loadNote = async () => {
+      try {
+        const noteData = await notesApi.get(params.id);
+        setNote(noteData);
+        setDrawingData(noteData.drawing_data || '');
+      } catch {
+        toast.error('오류', '노트를 불러오는데 실패했습니다.');
+        router.push('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadNote();
-  }, [params.id]);
-
-  const loadNote = async () => {
-    try {
-      const noteData = await notesApi.get(params.id);
-      setNote(noteData);
-      setDrawingData(noteData.drawing_data || '');
-    } catch (error) {
-      toast.error('오류', '노트를 불러오는데 실패했습니다.');
-      router.push('/');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [params.id, router]);
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -85,7 +86,7 @@ export default function EditNotePage({ params: paramsPromise }: PageParams) {
       }
       
       router.push(`/notes/${params.id}`);
-    } catch (error) {
+    } catch {
       toast.error('오류', '노트 수정에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
@@ -125,6 +126,7 @@ export default function EditNotePage({ params: paramsPromise }: PageParams) {
           {note.thumbnail_url && (
             <div className="mb-6">
               <p className="block text-sm font-medium text-gray-700 mb-2">현재 썸네일</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={note.thumbnail_url}
                 alt="Current thumbnail"

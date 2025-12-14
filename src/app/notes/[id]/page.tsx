@@ -26,20 +26,21 @@ export default function NoteDetailPage({ params: paramsPromise }: PageParams) {
     }
     
     setAuthToken();
+    
+    const loadNote = async () => {
+      try {
+        const noteData = await notesApi.get(params.id);
+        setNote(noteData);
+      } catch {
+        toast.error('오류', '노트를 불러오는데 실패했습니다.');
+        router.push('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadNote();
-  }, [params.id]);
-
-  const loadNote = async () => {
-    try {
-      const noteData = await notesApi.get(params.id);
-      setNote(noteData);
-    } catch (error) {
-      toast.error('오류', '노트를 불러오는데 실패했습니다.');
-      router.push('/');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [params.id, router]);
 
   const handleDelete = () => {
     modal.open(
@@ -62,7 +63,7 @@ export default function NoteDetailPage({ params: paramsPromise }: PageParams) {
                 toast.success('성공', '노트가 삭제되었습니다.');
                 modal.close();
                 router.push('/');
-              } catch (error) {
+              } catch {
                 toast.error('오류', '노트 삭제에 실패했습니다.');
               }
             }}
@@ -128,6 +129,7 @@ export default function NoteDetailPage({ params: paramsPromise }: PageParams) {
       <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-md p-6">
           {note.thumbnail_url && (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${note.thumbnail_url}`}
               alt="Note thumbnail"

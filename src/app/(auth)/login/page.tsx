@@ -38,7 +38,7 @@ export default function LoginPage() {
       setUser(response.user);
       toast.success('성공', '로그인 성공!');
       router.push('/');
-    } catch (error) {
+    } catch {
       toast.error('오류', '로그인 실패. 이메일과 비밀번호를 확인하세요.');
     } finally {
       setIsLoading(false);
