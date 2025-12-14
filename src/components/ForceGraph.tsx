@@ -19,9 +19,10 @@ interface D3Node extends GraphNode {
   fy?: number | null;
 }
 
-interface D3Edge extends GraphEdge {
+interface D3Edge {
   source: D3Node | string;
   target: D3Node | string;
+  type: string;
 }
 
 export default function ForceGraph({
@@ -59,7 +60,11 @@ export default function ForceGraph({
 
     // Prepare data
     const d3Nodes: D3Node[] = nodes.map(d => ({ ...d }));
-    const d3Edges: D3Edge[] = edges.map(d => ({ ...d }));
+    const d3Edges: D3Edge[] = edges.map(d => ({ 
+      source: d.source,
+      target: d.target,
+      type: d.type 
+    }));
 
     // Create force simulation
     const simulation = d3.forceSimulation<D3Node>(d3Nodes)
@@ -133,7 +138,7 @@ export default function ForceGraph({
         d.fy = null;
       });
 
-    node.call(drag);
+    node.call(drag as any);
 
     // Add click handler
     node.on('click', (event, d) => {
