@@ -58,7 +58,7 @@ export default function SimplePDFAnnotator({
   }, [pdfUrl]);
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [scale, setScale] = useState<number>(0.8);
+  const [scale, setScale] = useState<number>(0.6);
   const [tool, setTool] = useState<Tool>({
     type: 'pen',
     color: '#000000',
@@ -138,10 +138,7 @@ export default function SimplePDFAnnotator({
       return;
     }
     
-    // 필기 중 스크롤 방지
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.style.overflow = 'hidden';
-    }
+    // 필기 중 스크롤 방지 - 대신 pointer capture를 사용하여 처리
     
     const rect = canvasRef.current!.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
@@ -200,10 +197,6 @@ export default function SimplePDFAnnotator({
       saveCurrentCanvas();
       canvasRef.current?.releasePointerCapture(e.pointerId);
       
-      // 필기 종료 후 스크롤 다시 활성화
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.style.overflow = 'auto';
-      }
     }
   }, [isDrawing, saveCurrentCanvas]);
 
@@ -274,19 +267,6 @@ export default function SimplePDFAnnotator({
   const onPageLoadSuccess = (page: { width: number; height: number }) => {
     const { width, height } = page;
     setPageSize({ width, height });
-    
-    // 화면에 맞게 scale 자동 조정
-    if (scrollContainerRef.current && width > 0) {
-      const containerWidth = scrollContainerRef.current.clientWidth - 32; // padding 고려
-      const containerHeight = scrollContainerRef.current.clientHeight - 32;
-      
-      const scaleToFitWidth = containerWidth / width;
-      const scaleToFitHeight = containerHeight / height;
-      
-      // 너비와 높이 중 더 작은 scale 선택 (전체가 보이도록)
-      const optimalScale = Math.min(scaleToFitWidth, scaleToFitHeight, 1.5);
-      setScale(Math.max(0.5, optimalScale)); // 최소 0.5, 최대 1.5
-    }
   };
 
   // Change page
@@ -387,6 +367,25 @@ export default function SimplePDFAnnotator({
             +
           </button>
           
+          <button
+            onClick={() => {
+              if (scrollContainerRef.current && pageSize.width > 0) {
+                const containerWidth = scrollContainerRef.current.clientWidth - 32;
+                const containerHeight = scrollContainerRef.current.clientHeight - 32;
+                
+                const scaleToFitWidth = containerWidth / pageSize.width;
+                const scaleToFitHeight = containerHeight / pageSize.height;
+                
+                const optimalScale = Math.min(scaleToFitWidth, scaleToFitHeight, 1.2);
+                setScale(Math.max(0.3, optimalScale));
+              }
+            }}
+            className="ml-2 px-2 py-0.5 rounded hover:bg-gray-100 text-xs"
+            title="화면에 맞추기"
+          >
+            맞춤
+          </button>
+          
           {!readOnly && (
             <>
               <button
@@ -416,7 +415,10 @@ export default function SimplePDFAnnotator({
       </div>
 
       {/* PDF and Canvas */}
-      <div ref={scrollContainerRef} className="flex-1 min-h-0 overflow-auto bg-gray-200 p-4">
+      <div 
+        ref={scrollContainerRef} 
+        className={`flex-1 min-h-0 bg-gray-200 p-4 ${isDrawing ? 'overflow-hidden' : 'overflow-auto'}`}
+      >
         <div className="mx-auto relative" style={{ width: pageSize.width * scale }}>
           <Document
             file={pdfFile}
@@ -446,7 +448,7 @@ export default function SimplePDFAnnotator({
               className="absolute top-0 left-0"
               style={{ 
                 pointerEvents: readOnly ? 'none' : 'auto',
-                touchAction: 'none', // 중요: 브라우저 기본 터치 동작 방지
+                touchAction: isDrawing ? 'none' : 'pan-x pan-y', // 필기 중에만 터치 동작 방지
                 cursor: tool.type === 'pen' ? 'crosshair' : 
                         tool.type === 'highlighter' ? 'text' :
                         tool.type === 'eraser' ? 'grab' : 'auto'
